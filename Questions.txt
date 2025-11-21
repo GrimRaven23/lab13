@@ -1,0 +1,21 @@
+1. kubectl rollout undo deployment notes-deployment -n notes-app
+
+2. kubectl scale deployment notes-deployment --replicas=2 -n notes-app
+
+3.
+```yaml
+
+apiVersion: v1
+kind: ResourceQuota
+metadata:
+  name: notes-quota
+  namespace: notes-app
+spec:
+  hard:
+    requests.cpu: "1"
+    requests.memory: "1G"
+    limits.cpu: "2"
+    limits.memory: "2G"
+    pods: "2"
+
+```

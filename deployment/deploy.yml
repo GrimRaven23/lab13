@@ -1,0 +1,40 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: notes-deployment
+  namespace: notes-app
+  labels:
+    app: notes
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: notes
+  template:
+    metadata:
+      labels:
+        app: notes
+    spec:
+      volumes:
+        - name: notes-storage
+          persistentVolumeClaim:
+            claimName: notes-pvc
+
+      containers:
+        - name: notes-app
+          image: nginx:alpine
+          volumeMounts:
+            - name: notes-storage
+              mountPath: /var/notes
+          envFrom:
+            - configMapRef:
+                name: notes-config
+            - secretRef:
+                name: db-secret
+
+        - name: container2
+          image: busybox
+          command: ["sh", "-c", "while true; do echo 'Listing files:'; ls -l /var/notes; sleep 5; done"]
+          volumeMounts:
+            - name: notes-storage
+              mountPath: /var/notes
